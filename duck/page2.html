@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>캐릭터 선택</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+            margin-top: 10px;
+        }
+        #wordContainer {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            max-width: 400px;
+        }
+        .chip {
+            display: inline-block;
+            padding: 10px;
+            margin: 5px;
+            background-color: #f1f1f1;
+            border-radius: 25px;
+            cursor: pointer;
+        }
+        .selected {
+            background-color: #2196F3;
+            color: white;
+        }
+        #warning {
+            color: red;
+            display: none;
+        }
+        button {
+            padding: 15px 30px;
+            font-size: 18px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-bottom: 20px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <h1>아는 캐릭터를 전부 선택해보세요<br>Second stage</h1>
+    <div id="wordContainer"></div>
+    <p id="warning">최소 1명 이상의 캐릭터를 골라주세요</p>
+    <button onclick="nextPage()">다음페이지</button>
+
+    <script>
+        const Awords = [ '나루토 (Naruto)', '사쿠라 (Sakura)', '사스케 (Sasuke)', '이치고 (Ichigo)', '루피 (Luffy)', '조로 (Zoro)', '나미 (Nami)', 
+                '치파오 (Chopper)', '피카츄 (Pikachu)', '레드 (Red)', '애쉬 (Ash)', '세일러 문 (Sailor Moon)', '타키 (Taki)', '미츠하 (Mitsuha)', 
+                '쿠로코 (Kuroko)', '유노 (Yuno)', '유수케 (Yusuke)', '쿠로사키 (Kurosaki)', '네코마 (Nekoma)', '이오리 (Iori)', '미사키 (Misaki)', 
+                '히카루 (Hikaru)', '홈즈 (Holmes)', '란마 (Ranma)', '켄신 (Kenshin)', '하루히 (Haruhi)', '히카루 (Hikaru)', '미오 (Mio)', 
+                '이카리 (Ikari)', '노부나가 (Nobunaga)', '미사토 (Misato)', '레이 (Rei)', '아스카 (Asuka)', '신지 (Shinji)', '하늘 (Sky)', 
+                '테츠오 (Tetsuo)', '코난 (Conan)', '신이치 (Shinichi)', '란 (Ran)', '하이바라 (Haibara)', '안나 (Anna)', '카츠라기 (Katsuragi)', 
+                '테루미 (Terumi)', '쿠로코 (Kuroko)', '코로센세 (Korosensei)', '나카무라 (Nakamura)', '히쿠미 (Hikumi)', '미유키 (Miyuki)', 
+                '마사루 (Masaru)', '린도 (Rindo)', '츠바사 (Tsubasa)', '사토시 (Satoshi)', '코지로 (Kojiro)', '마사키 (Masaki)', '유미 (Yumi)', 
+                '세이야 (Seiya)', '사쿠라 (Sakura)', '마도카 (Madoka)', '호무라 (Homura)', '사야카 (Sayaka)', '쿄코 (Kyoko)', '모미지 (Momiji)', 
+                '치아키 (Chiaki)', '츠카사 (Tsukasa)', '유즈키 (Yuzuki)', '카에데 (Kaede)', '유우나 (Yuuna)', '미사오 (Misao)', '유키 (Yuki)', 
+                '토우야 (Touya)', '켄타 (Kenta)', '케이코 (Keiko)', '루나 (Luna)', '마미 (Mami)', '아키라 (Akira)', '미나코 (Minako)', '쿠즈하 (Kuzuha)', 
+                '이쿠토 (Ikuto)', '아미 (Ami)', '카요 (Kayo)', '미사키 (Misaki)', '코우 (Kou)', '치호 (Chiho)', '루카 (Luka)', '코타로 (Kotaro)', 
+                '미츠하 (Mitsuha)', '타키 (Taki)', '미사토 (Misato)', '루미 (Rumi)', '히카루 (Hikaru)', '미카 (Mika)', '유이 (Yui)', '유노하 (Yunoha)', 
+                '히카리 (Hikari)', '히나 (Hina)', '치하루 (Chiharu)', '마호 (Maho)', '히나타 (Hinata)', '마모루 (Mamoru)', '미사 (Misa)', '코헤이 (Kohei)', 
+                '카즈코 (Kazuko)', '미유키 (Miyuki)', '유우코 (Yuuko)', '히카리 (Hikari)', '사쿠 (Saku)', '사야 (Saya)', '리에 (Rie)', '타쿠야 (Takuya)'];
+        const Bwords = ['칸키치 (Kaneki)', '마도카 (Madoka)', '츠나 (Tsuna)', '에리카 (Erika)', '유미 (Yumi)', '안나 (Anna)', '오카베 (Okabe)', 
+                '마카 (Maka)', '블랙☆스타 (Black☆Star)', '소울 (Soul)', '크로나 (Crona)', '에미 (Emi)', '하나 (Hana)', '카즈마 (Kazuma)', 
+                '레이카 (Reika)', '유노 (Yuno)', '마리아 (Maria)', '샤오랑 (Syaoran)', '카나데 (Kanade)', '노조미 (Nozomi)', '레이카 (Reika)', 
+                '나츠미 (Natsumi)', '쿠로사와 (Kurosawa)', '코요미 (Koyomi)', '에리카 (Erika)', '유메 (Yume)', '사오리 (Saori)', '카구라 (Kagura)', 
+                '카이토 (Kaito)', '모모 (Momo)', '카나타 (Kanata)', '유키 (Yuki)', '츠카사 (Tsukasa)', '미야 (Miya)', '카렌 (Karen)', '유리 (Yuri)', 
+                '리사 (Lisa)', '카나 (Kana)', '마이 (Mai)', '타쿠미 (Takumi)', '사오리 (Saori)', '하루카 (Haruka)', '카오루 (Kaoru)', '나루 (Naru)', 
+                '코타미 (Kotami)', '켄타로 (Kentaro)', '사치코 (Sachiko)', '마이코 (Maiko)', '히토미 (Hitomi)', '유카리 (Yukari)', '유나 (Yuna)', 
+                '키요미 (Kiyomi)', '노조미 (Nozomi)', '레이나 (Reina)', '시노 (Shino)', '카나 (Kana)', '사치코 (Sachiko)', '유우키 (Yuuki)', 
+                '코이치 (Koichi)', '유리카 (Yurika)', '미나미 (Minami)', '타츠야 (Tatsuya)', '코헤이 (Kohei)', '이즈미 (Izumi)', '사오리 (Saori)', 
+                '히토미 (Hitomi)', '아카네 (Akane)', '코우지 (Koji)', '에미리 (Emiri)', '미치루 (Michiru)', '치즈루 (Chizuru)', '사야카 (Sayaka)', 
+                '나츠미 (Natsumi)', '하나코 (Hanako)', '루카 (Ruka)', '에리 (Eri)', '켄이치 (Kenichi)', '아야메 (Ayame)', '타카시 (Takashi)', '아야나 (Ayana)', 
+                '하루 (Haru)', '마사키 (Masaki)', '소이치로 (Soichiro)', '히카루 (Hikaru)', '에미카 (Emika)', '히토미 (Hitomi)', '아유미 (Ayumi)', '치하야 (Chihaya)', 
+                '유카리 (Yukari)', '미유 (Miyu)', '에이코 (Eiko)', '코우타 (Kouta)', '히지리 (Hijiri)', '나츠키 (Natsuki)', '유카리 (Yukari)', '마유 (Mayu)', 
+                '하루나 (Haruna)', '미즈키 (Mizuki)', '사요 (Sayo)', '토모 (Tomo)', '나기사 (Nagisa)', '유라 (Yura)', '히로미 (Hiromi)', '마나 (Mana)', 
+                '노조미 (Nozomi)', '히메카 (Himeka)'];
+        const Cwords = ['세바스찬 (Sebastian)', '시엘 (Ciel)', '렌 (Ren)', '노라 (Nora)', '유키 (Yuki)', '코토미 (Kotomi)', '토모야 (Tomoya)', 
+                '슈즈카 (Suzuka)', '쇼타로 (Shotaro)', '리카 (Rika)', '릴리 (Lily)', '사야 (Saya)', '츠루기 (Tsurugi)', '유리 (Yuri)', 
+                '카즈키 (Kazuki)', '나오키 (Naoki)', '케이스케 (Keisuke)', '이즈야 (Izaya)', '시즈오 (Shizuo)', '마리아 (Maria)', 
+                '에리스 (Eris)', '시온 (Shion)', '마코토 (Makoto)', '미코토 (Mikoto)', '아이카와 (Aikawa)', '미츠루 (Mitsuru)', 
+                '루이 (Rui)', '메드카 (Medaka)', '하즈키 (Hazuki)', '미유키 (Miyuki)', '히카리 (Hikari)', '케이타 (Keita)', 
+                '에미 (Emi)', '유우 (Yuu)', '나기 (Nagi)', '미츠키 (Mitsuki)', '나츠키 (Natsuki)', '나기 (Nagi)', '소라 (Sora)', 
+                '코토하 (Kotoha)', '히바리 (Hibari)', '카나데 (Kanade)', '키리코 (Kiriko)', '사요코 (Sayoko)', '코다마 (Kodama)', 
+                '히메 (Hime)', '하루코 (Haruko)', '유메 (Yume)', '아야 (Aya)', '린 (Rin)', '시온 (Shion)', '리카 (Rika)', '나나 (Nana)', 
+                '나츠 (Natsu)', '이쿠타 (Ikuta)', '나츠키 (Natsuki)', '나오키 (Naoki)', '마리코 (Mariko)', '시오리 (Shiori)', '나오 (Nao)', 
+                '레이코 (Reiko)', '타마 (Tama)', '츠키코 (Tsukiko)', '미츠키 (Mitsuki)', '유키노 (Yukino)', '이로하 (Iroha)', '코토리 (Kotori)', 
+                '리코 (Riko)', '유즈하 (Yuzuha)', '이치노세 (Ichinose)', '타카미 (Takami)', '미사키 (Misaki)', '쇼코 (Shoko)', '타마키 (Tamaki)', 
+                '요시오 (Yoshio)', '아야카 (Ayaka)', '나나미 (Nanami)', '유리카 (Yurika)', '치나츠 (Chinatsu)', '레나 (Rena)', 
+                '유이카 (Yuika)', '아오이 (Aoi)', '마사토 (Masato)', '노조미 (Nozomi)', '카나타 (Kanata)', '미도리 (Midori)', 
+                '카오리 (Kaori)', '나츠미 (Natsumi)', '타마에 (Tamae)', '미치루 (Michiru)', '유리카 (Yurika)'];
+
+        function displayWords(words) {
+            const container = document.getElementById('wordContainer');
+            words.sort(() => 0.5 - Math.random()).slice(0, 30).forEach(word => {
+                const chip = document.createElement('div');
+                chip.className = 'chip';
+                chip.innerText = word;
+                chip.onclick = () => {
+                    chip.classList.toggle('selected');
+                };
+                container.appendChild(chip);
+            });
+        }
+
+        function nextPage() {
+            const selectedCount = document.querySelectorAll('.selected').length;
+            if (selectedCount === 0) {
+                document.getElementById('warning').style.display = 'block';
+            } else {
+                localStorage.setItem('selectedCountPage3', selectedCount);
+                localStorage.setItem('wordArrayValuePage3', wordArrayValuePage3);
+                window.location.href = 'page3.html';
+            }
+        }
+
+        let wordArrayValuePage3;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const selectedCountPage2 = parseInt(localStorage.getItem('selectedCountPage2'));
+            const wordArrayValuePage2 = parseInt(localStorage.getItem('wordArrayValuePage2'));
+   
+            if (selectedCountPage2 <= 7) {
+                wordArrayValuePage3 = Math.max(1, wordArrayValuePage2 - 1);
+            } else if (selectedCountPage2 <= 21) {
+                wordArrayValuePage3 = wordArrayValuePage2;
+            } else {
+                wordArrayValuePage3 = Math.min(3, wordArrayValuePage2 + 1);
+            }
+
+            if (wordArrayValuePage3 === 1) {
+                displayWords(Awords);
+            } else if (wordArrayValuePage3 === 2) {
+                displayWords(Bwords);
+            } else {
+                displayWords(Cwords);
+            }
+        });
+    </script>
+</body>
+</html>
